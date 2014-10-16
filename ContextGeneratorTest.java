@@ -47,7 +47,7 @@ public class ContextGeneratorTest {
         assertEquals("user", pc.tableName);
         assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("firstName")));
         assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("firstName")));
-        assertEquals("INSERT INTO user (firstName) VALUES (?)", pc.insertQuery);
+        assertEquals("INSERT INTO user (firstName) VALUES (?) RETURNING *", pc.insertQuery);
         assertEquals("SELECT * FROM user WHERE id = {id}", pc.selectQuery);
     }
 
@@ -70,7 +70,7 @@ public class ContextGeneratorTest {
         assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("firstName")));
         assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("lastName")));
         assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
-        assertEquals("INSERT INTO user (firstName, lastName) VALUES (?, ?)", pc.insertQuery);
+        assertEquals("INSERT INTO user (firstName, lastName) VALUES (?, ?) RETURNING *", pc.insertQuery);
         assertEquals("SELECT * FROM user WHERE id = {id}", pc.selectQuery);
     }
 
@@ -90,7 +90,7 @@ public class ContextGeneratorTest {
         assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
         assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("age")));
         assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("age")));
-        assertEquals("INSERT INTO user (age, firstName, lastName) VALUES (?, ?, ?)", pc.insertQuery);
+        assertEquals("INSERT INTO user (age, firstName, lastName) VALUES (?, ?, ?) RETURNING *", pc.insertQuery);
         assertEquals("SELECT * FROM user WHERE id = {id}", pc.selectQuery);
     }
 }
