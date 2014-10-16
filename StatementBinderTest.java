@@ -52,4 +52,31 @@ public class StatementBinderTest {
         StatementBinder.bind(statement, pc, tc);
         assertEquals("INSERT INTO users (username, age, balance, colour, joinedOn, dateOfBirth) VALUES ('josh', '27', '100', 'RED', '1999-01-08 04:05:06.000000 +00:00:00', '1987-08-04 +01:00:00')", statement.toString());
     }
+
+    @Test
+    public void testSimpleUpdateBind() throws SQLException, IllegalAccessException {
+        Database db = new DatabaseImpl(App.TEST_DATABASE_PROPERTIES_FILE_NAME);
+        String sql = "UPDATE users SET username = ?, age = ?, balance = ?, colour = ?, joinedOn = ?, dateOfBirth = ? WHERE id = {id} RETURNING *";
+        PreparedStatement statement = db.getConnection().prepareStatement(sql);
+        PersistentContext pc = new PersistentContext();
+
+        TestClass tc = new TestClass() {{
+            username = "josh";
+            age = 27;
+            balance = 100;
+            colour = Colour.RED;
+            joinedOn = LocalDateTime.parse("1999-01-08 04:05:06", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            dateOfBirth = LocalDate.parse("1987-08-04", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }};
+
+        pc.fields = Arrays.stream(TestClass.class.getDeclaredFields()).filter(field ->
+                        field.getName().equals("username") || field.getName().equals("age") ||
+                        field.getName().equals("balance") || field.getName().equals("colour") ||
+                        field.getName().equals("joinedOn") || field.getName().equals("dateOfBirth")
+        ).toArray(Field[]::new);
+
+        StatementBinder.bind(statement, pc, tc);
+
+        assertEquals("UPDATE users SET username = 'josh', age = '27', balance = '100', colour = 'RED', joinedOn = '1999-01-08 04:05:06.000000 +00:00:00', dateOfBirth = '1987-08-04 +01:00:00' WHERE id = {id} RETURNING *", statement.toString());
+    }
 }
