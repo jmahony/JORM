@@ -28,7 +28,7 @@ class TestClass {
 public class StatementBinderTest {
 
     @Test
-    public void testSimpleBind() throws SQLException, IllegalAccessException {
+    public void testSimpleInsertBind() throws SQLException, IllegalAccessException {
         Database db = new DatabaseImpl(App.TEST_DATABASE_PROPERTIES_FILE_NAME);
         String sql = "INSERT INTO users (username, age, balance, colour, joinedOn, dateOfBirth) VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement statement = db.getConnection().prepareStatement(sql);
