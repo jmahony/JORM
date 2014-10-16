@@ -21,6 +21,13 @@ public class Jorm {
         return connection.prepareStatement(context.selectQuery.replace("{id}", id.toString()));
     }
 
+    public static PreparedStatement getUpdateStatement(Connection connection, Class<?> c, Object o) throws SQLException, IllegalAccessException {
+        PersistentContext context = createContext(c);
+        PreparedStatement statement = connection.prepareStatement(context.updateQuery.replace("{id}", context.id.get(o).toString()));
+        StatementBinder.bind(statement, context, o);
+        return statement;
+    }
+
     public static PersistentContext createContext(Class<?> c) {
         if (!contexts.containsKey(c)) contexts.put(c, ContextGenerator.generate(c));
         return contexts.get(c);

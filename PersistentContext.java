@@ -9,5 +9,6 @@ public class PersistentContext {
     public Field[] fields;
     public String insertQuery;
     public String selectQuery;
+    public String updateQuery;
     public Field id;
 }

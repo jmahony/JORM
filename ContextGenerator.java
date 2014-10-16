@@ -20,6 +20,7 @@ public class ContextGenerator {
             id = getId(c);
             selectQuery = generateSelectQueryString(this);
             insertQuery = generateInsertQueryString(this);
+            updateQuery = generateUpdateQueryString(this);
         }};
         makeAccessible(pc);
         return pc;
@@ -81,9 +82,26 @@ public class ContextGenerator {
     }
 
     private static String addParameterToQueryString(String sql, PersistentContext pc, int position) {
-        String columnsSeparator = position == pc.fields.length - 1 ? "" : ", %s";
-        String valuesSeparator = position == pc.fields.length - 1 ? "" : ", %s";
-        return String.format(sql, pc.columns[position] + columnsSeparator, "?" + valuesSeparator);
+        String separator = position == pc.fields.length - 1 ? "" : ", %s";
+        return String.format(sql, pc.columns[position] + separator, "?" + separator);
+    }
+
+    private static String generateUpdateQueryString(PersistentContext pc) {
+        String sql = String.format("UPDATE %s SET %s WHERE id = {id} RETURNING *", pc.tableName, "%s");
+        return addParametersToUpdateQueryString(sql, pc);
+    }
+
+    private static String addParametersToUpdateQueryString(String sql, PersistentContext pc) {
+        for (int i = 0; i < pc.fields.length; i++) {
+            sql = addParameterToUpdateQueryString(sql, pc, i);
+        }
+        return sql;
+    }
+
+    private static String addParameterToUpdateQueryString(String sql, PersistentContext pc, int position) {
+        String separator = position == pc.fields.length - 1 ? "" : ", %s";
+        String columnValuePair = String.format("%s=?%s", pc.columns[position], separator);
+        return String.format(sql, columnValuePair);
     }
 
     private static void makeAccessible(PersistentContext pc) {
