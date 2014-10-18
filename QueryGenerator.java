@@ -11,14 +11,14 @@ public class QueryGenerator {
     }
 
     private static String addParametersToQueryString(String sql, BasePersistentContext pc) {
-        for (int i = 0; i < pc.allFields.length; i++) {
+        for (int i = 0; i < pc.allColumns.length; i++) {
             sql = addParameterToQueryString(sql, pc, i);
         }
         return sql;
     }
 
     private static String addParameterToQueryString(String sql, BasePersistentContext pc, int position) {
-        String separator = position == pc.allFields.length - 1 ? "" : ", %s";
+        String separator = position == pc.allColumns.length - 1 ? "" : ", %s";
         return String.format(sql, pc.allColumns[position] + separator, "?" + separator);
     }
 
@@ -28,14 +28,14 @@ public class QueryGenerator {
     }
 
     private static String addParametersToUpdateQueryString(String sql, BasePersistentContext pc) {
-        for (int i = 0; i < pc.allFields.length; i++) {
+        for (int i = 0; i < pc.allColumns.length; i++) {
             sql = addParameterToUpdateQueryString(sql, pc, i);
         }
         return sql;
     }
 
     private static String addParameterToUpdateQueryString(String sql, BasePersistentContext pc, int position) {
-        String separator = position == pc.allFields.length - 1 ? "" : ", %s";
+        String separator = position == pc.allColumns.length - 1 ? "" : ", %s";
         String columnValuePair = String.format("%s=?%s", pc.allColumns[position], separator);
         return String.format(sql, columnValuePair);
     }
