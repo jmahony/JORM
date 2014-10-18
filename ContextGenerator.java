@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class ContextGenerator {
 
-    public static BasePersistentContext generateBase(final Class<?> cl) {
+    public static BasePersistentContext generateBase(final Class<?> cl, Field field) {
         BasePersistentContext epc = new BasePersistentContext() {{
             c = cl;
             fields = getPersistentFields(c);
@@ -20,6 +20,7 @@ public class ContextGenerator {
             expandablePersistents = getExpandablePersistent(c);
             allFields = getAllFields(this);
             allColumns = getAllColumns(this);
+            containingField = field;
         }};
         makeAccessible(epc);
         return epc;
@@ -55,7 +56,7 @@ public class ContextGenerator {
     private static Map<Class, BasePersistentContext> getExpandablePersistent(Class<?> c) {
         Field[] fields = getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
         return Arrays.stream(fields).filter(field -> true).collect(Collectors.toMap(Field::getType, f ->
-                generateBase(f.getType())));
+                generateBase(f.getType(), f)));
     }
 
     private static Field[] getAllFieldsWithAnnotation(Class<?> c, Class annotation) {

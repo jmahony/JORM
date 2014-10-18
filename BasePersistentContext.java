@@ -10,4 +10,5 @@ public class BasePersistentContext {
     public Map<Class, BasePersistentContext> expandablePersistents;
     public String[] allColumns;
     public Field[] allFields;
+    public Field containingField;
 }
