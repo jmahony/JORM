@@ -9,17 +9,29 @@ import com.wagerwilly.jorm.exceptions.JormException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ContextGenerator {
+
+    public static ExpandablePersistentContext generateExpandable(final Class<?> cl) {
+        ExpandablePersistentContext epc = new ExpandablePersistentContext() {{
+            c = cl;
+            fields = getPersistentFields(c);
+            columns = getColumns(fields);
+            expandablePersistents = getExpandablePersistent(c);
+        }};
+        makeAccessible(epc);
+        return epc;
+    }
+
     public static PersistentContext generate(final Class<?> cl) {
         PersistentContext pc = new PersistentContext() {{
             c = cl;
             tableName = getTableName(c);
             fields = getPersistentFields(c);
-            expandableFields = getExpandablePersistentFields(c);
             columns = getColumns(fields);
-            expandableColumns = getColumns(expandableFields);
+            expandablePersistents = getExpandablePersistent(c);
             id = getId(c);
             selectQuery = generateSelectQueryString(this);
             insertQuery = generateInsertQueryString(this);
@@ -30,7 +42,8 @@ public class ContextGenerator {
     }
 
     private static String getTableName(Class<?> c) {
-        String annotationName = c.getAnnotation(Table.class).name();
+        Table annotation = c.getAnnotation(Table.class);
+        String annotationName = annotation.name();
         return annotationName.isEmpty() ? c.getSimpleName() : annotationName;
     }
 
@@ -38,8 +51,13 @@ public class ContextGenerator {
         return getAllFieldsWithAnnotation(c, Persistent.class);
     }
 
-    private static Field[] getExpandablePersistentFields(Class<?> c) {
-        return getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
+    private static Map<Class, ExpandablePersistentContext> getExpandablePersistent(Class<?> c) {
+        HashMap<Class, ExpandablePersistentContext> expandableContexts = new HashMap<>();
+        Field[] fields = getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
+        for (Field field : fields) {
+            expandableContexts.put(field.getType(), generateExpandable(field.getType()));
+        }
+        return expandableContexts;
     }
 
     private static Field[] getAllFieldsWithAnnotation(Class<?> c, Class annotation) {
@@ -113,5 +131,9 @@ public class ContextGenerator {
     private static void makeAccessible(PersistentContext pc) {
         Arrays.stream(pc.fields).forEach(field -> field.setAccessible(true));
         pc.id.setAccessible(true);
+    }
+
+    private static void makeAccessible(ExpandablePersistentContext pc) {
+        Arrays.stream(pc.fields).forEach(field -> field.setAccessible(true));
     }
 }
