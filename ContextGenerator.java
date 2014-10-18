@@ -97,15 +97,15 @@ public class ContextGenerator {
     }
 
     private static String addParametersToQueryString(String sql, BasePersistentContext pc) {
-        for (int i = 0; i < pc.fields.length; i++) {
+        for (int i = 0; i < pc.allFields.length; i++) {
             sql = addParameterToQueryString(sql, pc, i);
         }
         return sql;
     }
 
     private static String addParameterToQueryString(String sql, BasePersistentContext pc, int position) {
-        String separator = position == pc.fields.length - 1 ? "" : ", %s";
-        return String.format(sql, pc.columns[position] + separator, "?" + separator);
+        String separator = position == pc.allFields.length - 1 ? "" : ", %s";
+        return String.format(sql, pc.allColumns[position] + separator, "?" + separator);
     }
 
     private static String generateUpdateQueryString(PersistentContext pc) {
@@ -114,15 +114,15 @@ public class ContextGenerator {
     }
 
     private static String addParametersToUpdateQueryString(String sql, BasePersistentContext pc) {
-        for (int i = 0; i < pc.fields.length; i++) {
+        for (int i = 0; i < pc.allFields.length; i++) {
             sql = addParameterToUpdateQueryString(sql, pc, i);
         }
         return sql;
     }
 
     private static String addParameterToUpdateQueryString(String sql, BasePersistentContext pc, int position) {
-        String separator = position == pc.fields.length - 1 ? "" : ", %s";
-        String columnValuePair = String.format("%s=?%s", pc.columns[position], separator);
+        String separator = position == pc.allFields.length - 1 ? "" : ", %s";
+        String columnValuePair = String.format("%s=?%s", pc.allColumns[position], separator);
         return String.format(sql, columnValuePair);
     }
 
@@ -141,9 +141,7 @@ public class ContextGenerator {
 
     private static List<Field> getAllFields(BasePersistentContext pc, List<Field> fields) {
         fields.addAll(Arrays.asList(pc.fields));
-        for (BasePersistentContext bpc : pc.expandablePersistents.values()) {
-            fields.addAll(getAllFields(bpc, fields));
-        }
+        pc.expandablePersistents.values().forEach(v -> getAllFields(v, fields));
         return fields;
     }
 
@@ -153,9 +151,7 @@ public class ContextGenerator {
 
     private static List<String> getAllColumns(BasePersistentContext pc, List<String> columns) {
         columns.addAll(Arrays.asList(pc.columns));
-        for (BasePersistentContext bpc : pc.expandablePersistents.values()) {
-            columns.addAll(getAllColumns(bpc, columns));
-        }
+        pc.expandablePersistents.values().forEach(v -> getAllColumns(v, columns));
         return columns;
     }
 }
