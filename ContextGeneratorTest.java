@@ -1,5 +1,6 @@
 package com.wagerwilly.jorm;
 
+import com.wagerwilly.jorm.annotations.ExpandablePersistent;
 import com.wagerwilly.jorm.annotations.Id;
 import com.wagerwilly.jorm.annotations.Persistent;
 import com.wagerwilly.jorm.annotations.Table;
@@ -92,5 +93,41 @@ public class ContextGeneratorTest {
         assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("age")));
         assertEquals("INSERT INTO user (age, firstName, lastName) VALUES (?, ?, ?) RETURNING *", pc.insertQuery);
         assertEquals("SELECT * FROM user WHERE id = {id}", pc.selectQuery);
+    }
+
+    class Address {
+        @Persistent
+        String streetLineOne;
+        @Persistent
+        String postcode;
+    }
+
+    @Table(name = "user")
+    class User6 {
+        @Id
+        long id;
+        @Persistent
+        String firstName;
+        @Persistent
+        String lastName;
+        @ExpandablePersistent
+        Address address;
+    }
+
+    @Test
+    public void testGenerateContextWithExpandablePersistentFields() {
+        PersistentContext pc = ContextGenerator.generate(User6.class);
+        assertEquals("id", pc.id.getName());
+        assertEquals("user", pc.tableName);
+        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("firstName")));
+        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("firstName")));
+        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("lastName")));
+        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
+        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("lastName")));
+        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
+        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("streetLineOne")));
+        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("streetLineOne")));
+        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("postcode")));
+        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("postcode")));
     }
 }
