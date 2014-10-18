@@ -42,8 +42,7 @@ public class ContextGenerator {
     }
 
     private static String getTableName(Class<?> c) {
-        Table annotation = c.getAnnotation(Table.class);
-        String annotationName = annotation.name();
+        String annotationName = c.getAnnotation(Table.class).name();
         return annotationName.isEmpty() ? c.getSimpleName() : annotationName;
     }
 
