@@ -1,5 +1,6 @@
 package com.wagerwilly.jorm;
 
+import com.wagerwilly.jorm.annotations.ExpandablePersistent;
 import com.wagerwilly.jorm.annotations.Id;
 import com.wagerwilly.jorm.annotations.Persistent;
 import com.wagerwilly.jorm.annotations.Table;
@@ -16,7 +17,9 @@ public class ContextGenerator {
             c = cl;
             tableName = getTableName(c);
             fields = getPersistentFields(c);
+            expandableFields = getExpandablePersistentFields(c);
             columns = getColumns(fields);
+            expandableColumns = getColumns(expandableFields);
             id = getId(c);
             selectQuery = generateSelectQueryString(this);
             insertQuery = generateInsertQueryString(this);
@@ -33,6 +36,10 @@ public class ContextGenerator {
 
     private static Field[] getPersistentFields(Class<?> c) {
         return getAllFieldsWithAnnotation(c, Persistent.class);
+    }
+
+    private static Field[] getExpandablePersistentFields(Class<?> c) {
+        return getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
     }
 
     private static Field[] getAllFieldsWithAnnotation(Class<?> c, Class annotation) {
