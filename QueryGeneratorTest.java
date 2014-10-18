@@ -30,4 +30,12 @@ public class QueryGeneratorTest {
         }};
         assertEquals("UPDATE users SET firstName=?, lastName=? WHERE id = {id} RETURNING *", QueryGenerator.generateUpdateQueryString(pc));
     }
+
+    @Test
+    public void testGeneratorDeleteQuery() {
+        PersistentContext pc = new PersistentContext() {{
+            tableName = "users";
+        }};
+        assertEquals("DELETE FROM users WHERE id = {id}", QueryGenerator.generateDeleteQueryString(pc));
+    }
 }
