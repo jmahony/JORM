@@ -94,14 +94,14 @@ public class ContextGenerator {
         return addParametersToQueryString(sql, pc);
     }
 
-    private static String addParametersToQueryString(String sql, PersistentContext pc) {
+    private static String addParametersToQueryString(String sql, BasePersistentContext pc) {
         for (int i = 0; i < pc.fields.length; i++) {
             sql = addParameterToQueryString(sql, pc, i);
         }
         return sql;
     }
 
-    private static String addParameterToQueryString(String sql, PersistentContext pc, int position) {
+    private static String addParameterToQueryString(String sql, BasePersistentContext pc, int position) {
         String separator = position == pc.fields.length - 1 ? "" : ", %s";
         return String.format(sql, pc.columns[position] + separator, "?" + separator);
     }
@@ -111,14 +111,14 @@ public class ContextGenerator {
         return addParametersToUpdateQueryString(sql, pc);
     }
 
-    private static String addParametersToUpdateQueryString(String sql, PersistentContext pc) {
+    private static String addParametersToUpdateQueryString(String sql, BasePersistentContext pc) {
         for (int i = 0; i < pc.fields.length; i++) {
             sql = addParameterToUpdateQueryString(sql, pc, i);
         }
         return sql;
     }
 
-    private static String addParameterToUpdateQueryString(String sql, PersistentContext pc, int position) {
+    private static String addParameterToUpdateQueryString(String sql, BasePersistentContext pc, int position) {
         String separator = position == pc.fields.length - 1 ? "" : ", %s";
         String columnValuePair = String.format("%s=?%s", pc.columns[position], separator);
         return String.format(sql, columnValuePair);
