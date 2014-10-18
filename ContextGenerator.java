@@ -33,11 +33,11 @@ public class ContextGenerator {
             columns = getColumns(fields);
             expandablePersistents = getExpandablePersistent(c);
             id = getId(c);
+            allFields = getAllFields(this);
+            allColumns = getAllColumns(this);
             selectQuery = generateSelectQueryString(this);
             insertQuery = generateInsertQueryString(this);
             updateQuery = generateUpdateQueryString(this);
-            allFields = getAllFields(this);
-            allColumns = getAllColumns(this);
         }};
         makeAccessible(pc);
         return pc;
