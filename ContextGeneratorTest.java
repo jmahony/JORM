@@ -125,9 +125,9 @@ public class ContextGeneratorTest {
         assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
         assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("lastName")));
         assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
-        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("streetLineOne")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("streetLineOne")));
-        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("postcode")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("postcode")));
+        assertTrue(Arrays.stream(pc.expandableFields).anyMatch(field -> field.getName().equals("streetLineOne")));
+        assertTrue(Arrays.stream(pc.expandableColumns).anyMatch(s -> s.equals("streetLineOne")));
+        assertTrue(Arrays.stream(pc.expandableFields).anyMatch(field -> field.getName().equals("postcode")));
+        assertTrue(Arrays.stream(pc.expandableColumns).anyMatch(s -> s.equals("postcode")));
     }
 }
