@@ -1,6 +1,10 @@
 package com.wagerwilly.jorm;
 
 public class QueryGenerator {
+    public static String generateDeleteQueryString(PersistentContext pc) {
+        return String.format("DELETE FROM %s WHERE id = {id}", pc.tableName);
+    }
+
     static String generateSelectQueryString(PersistentContext pc) {
         return String.format("SELECT * FROM %s WHERE id = {id}", pc.tableName);
     }
