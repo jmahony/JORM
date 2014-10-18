@@ -52,12 +52,9 @@ public class ContextGenerator {
     }
 
     private static Map<Class, BasePersistentContext> getExpandablePersistent(Class<?> c) {
-        HashMap<Class, BasePersistentContext> expandableContexts = new HashMap<>();
         Field[] fields = getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
-        for (Field field : fields) {
-            expandableContexts.put(field.getType(), generateBase(field.getType()));
-        }
-        return expandableContexts;
+        return Arrays.stream(fields).filter(field -> true).collect(Collectors.toMap(Field::getType, f ->
+                generateBase(f.getType())));
     }
 
     private static Field[] getAllFieldsWithAnnotation(Class<?> c, Class annotation) {
