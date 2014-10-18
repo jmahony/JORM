@@ -21,4 +21,13 @@ public class QueryGeneratorTest {
         }};
         assertEquals("INSERT INTO users (firstName, lastName) VALUES (?, ?) RETURNING *", QueryGenerator.generateInsertQueryString(pc));
     }
+
+    @Test
+    public void testGeneratorUpdateQuery() {
+        PersistentContext pc = new PersistentContext() {{
+            tableName = "users";
+            allColumns = new String[] {"firstName", "lastName"};
+        }};
+        assertEquals("UPDATE users SET firstName=?, lastName=? WHERE id = {id} RETURNING *", QueryGenerator.generateUpdateQueryString(pc));
+    }
 }
