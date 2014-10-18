@@ -32,8 +32,7 @@ public class ContextGenerator {
     }
 
     private static Field[] getPersistentFields(Class<?> c) {
-        Field[] fields = getAllFieldsWithAnnotation(c, Persistent.class);
-        return fields;
+        return getAllFieldsWithAnnotation(c, Persistent.class);
     }
 
     private static Field[] getAllFieldsWithAnnotation(Class<?> c, Class annotation) {
