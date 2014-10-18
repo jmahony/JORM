@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 
 public class ContextGenerator {
 
-    public static ExpandablePersistentContext generateExpandable(final Class<?> cl) {
-        ExpandablePersistentContext epc = new ExpandablePersistentContext() {{
+    public static BasePersistentContext generateBase(final Class<?> cl) {
+        BasePersistentContext epc = new BasePersistentContext() {{
             c = cl;
             fields = getPersistentFields(c);
             columns = getColumns(fields);
@@ -51,11 +51,11 @@ public class ContextGenerator {
         return getAllFieldsWithAnnotation(c, Persistent.class);
     }
 
-    private static Map<Class, ExpandablePersistentContext> getExpandablePersistent(Class<?> c) {
-        HashMap<Class, ExpandablePersistentContext> expandableContexts = new HashMap<>();
+    private static Map<Class, BasePersistentContext> getExpandablePersistent(Class<?> c) {
+        HashMap<Class, BasePersistentContext> expandableContexts = new HashMap<>();
         Field[] fields = getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
         for (Field field : fields) {
-            expandableContexts.put(field.getType(), generateExpandable(field.getType()));
+            expandableContexts.put(field.getType(), generateBase(field.getType()));
         }
         return expandableContexts;
     }
@@ -133,7 +133,7 @@ public class ContextGenerator {
         pc.id.setAccessible(true);
     }
 
-    private static void makeAccessible(ExpandablePersistentContext pc) {
+    private static void makeAccessible(BasePersistentContext pc) {
         Arrays.stream(pc.fields).forEach(field -> field.setAccessible(true));
     }
 }

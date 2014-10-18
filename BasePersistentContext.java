@@ -3,9 +3,9 @@ package com.wagerwilly.jorm;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public class ExpandablePersistentContext {
+public class BasePersistentContext {
     public Class c;
     public String[] columns;
     public Field[] fields;
-    public Map<Class, ExpandablePersistentContext> expandablePersistents;
+    public Map<Class, BasePersistentContext> expandablePersistents;
 }
