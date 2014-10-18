@@ -7,9 +7,7 @@ import com.wagerwilly.jorm.annotations.Table;
 import com.wagerwilly.jorm.exceptions.JormException;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ContextGenerator {
@@ -20,6 +18,8 @@ public class ContextGenerator {
             fields = getPersistentFields(c);
             columns = getColumns(fields);
             expandablePersistents = getExpandablePersistent(c);
+            allFields = getAllFields(this);
+            allColumns = getAllColumns(this);
         }};
         makeAccessible(epc);
         return epc;
@@ -36,6 +36,8 @@ public class ContextGenerator {
             selectQuery = generateSelectQueryString(this);
             insertQuery = generateInsertQueryString(this);
             updateQuery = generateUpdateQueryString(this);
+            allFields = getAllFields(this);
+            allColumns = getAllColumns(this);
         }};
         makeAccessible(pc);
         return pc;
@@ -131,5 +133,29 @@ public class ContextGenerator {
 
     private static void makeAccessible(BasePersistentContext pc) {
         Arrays.stream(pc.fields).forEach(field -> field.setAccessible(true));
+    }
+
+    private static Field[] getAllFields(BasePersistentContext pc) {
+        return getAllFields(pc, new ArrayList<>()).stream().toArray(Field[]::new);
+    }
+
+    private static List<Field> getAllFields(BasePersistentContext pc, List<Field> fields) {
+        fields.addAll(Arrays.asList(pc.fields));
+        for (BasePersistentContext bpc : pc.expandablePersistents.values()) {
+            fields.addAll(getAllFields(bpc, fields));
+        }
+        return fields;
+    }
+
+    private static String[] getAllColumns(BasePersistentContext pc) {
+        return getAllColumns(pc, new ArrayList<>()).stream().toArray(String[]::new);
+    }
+
+    private static List<String> getAllColumns(BasePersistentContext pc, List<String> columns) {
+        columns.addAll(Arrays.asList(pc.columns));
+        for (BasePersistentContext bpc : pc.expandablePersistents.values()) {
+            columns.addAll(getAllColumns(bpc, columns));
+        }
+        return columns;
     }
 }

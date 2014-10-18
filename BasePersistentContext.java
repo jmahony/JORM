@@ -8,4 +8,6 @@ public class BasePersistentContext {
     public String[] columns;
     public Field[] fields;
     public Map<Class, BasePersistentContext> expandablePersistents;
+    public String[] allColumns;
+    public Field[] allFields;
 }
