@@ -7,8 +7,6 @@ import com.wagerwilly.jorm.annotations.Table;
 import com.wagerwilly.jorm.exceptions.JormException;
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -46,10 +44,8 @@ public class ContextGeneratorTest {
         PersistentContext pc = ContextGenerator.generate(User3.class);
         assertEquals("id", pc.id.getName());
         assertEquals("user", pc.tableName);
-        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("firstName")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("firstName")));
-        assertTrue(Arrays.stream(pc.allFields).anyMatch(field -> field.getName().equals("firstName")));
-        assertTrue(Arrays.stream(pc.allColumns).anyMatch(s -> s.equals("firstName")));
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("firstName")));
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("firstName")));
     }
 
     @Table(name = "user")
@@ -67,14 +63,8 @@ public class ContextGeneratorTest {
         PersistentContext pc = ContextGenerator.generate(User4.class);
         assertEquals("id", pc.id.getName());
         assertEquals("user", pc.tableName);
-        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("firstName")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("firstName")));
-        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("lastName")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
-        assertTrue(Arrays.stream(pc.allFields).anyMatch(field -> field.getName().equals("firstName")));
-        assertTrue(Arrays.stream(pc.allColumns).anyMatch(s -> s.equals("firstName")));
-        assertTrue(Arrays.stream(pc.allFields).anyMatch(field -> field.getName().equals("lastName")));
-        assertTrue(Arrays.stream(pc.allColumns).anyMatch(s -> s.equals("lastName")));
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("firstName")));
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("lastName")));
     }
 
     class User5 extends User4 {
@@ -87,18 +77,9 @@ public class ContextGeneratorTest {
         PersistentContext pc = ContextGenerator.generate(User5.class);
         assertEquals("id", pc.id.getName());
         assertEquals("user", pc.tableName);
-        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("firstName")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("firstName")));
-        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("lastName")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
-        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("age")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("age")));
-        assertTrue(Arrays.stream(pc.allFields).anyMatch(field -> field.getName().equals("firstName")));
-        assertTrue(Arrays.stream(pc.allColumns).anyMatch(s -> s.equals("firstName")));
-        assertTrue(Arrays.stream(pc.allFields).anyMatch(field -> field.getName().equals("lastName")));
-        assertTrue(Arrays.stream(pc.allColumns).anyMatch(s -> s.equals("lastName")));
-        assertTrue(Arrays.stream(pc.allFields).anyMatch(field -> field.getName().equals("age")));
-        assertTrue(Arrays.stream(pc.allColumns).anyMatch(s -> s.equals("age")));
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("firstName")));
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("lastName")));
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("age")));
     }
 
     class Address {
@@ -125,26 +106,9 @@ public class ContextGeneratorTest {
         PersistentContext pc = ContextGenerator.generate(User6.class);
         assertEquals("id", pc.id.getName());
         assertEquals("user", pc.tableName);
-        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("firstName")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("firstName")));
-        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("lastName")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
-        assertTrue(Arrays.stream(pc.fields).anyMatch(field -> field.getName().equals("lastName")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
-        assertTrue(pc.expandablePersistents.containsKey(Address.class));
-        assertTrue(pc.expandablePersistents.get(Address.class).containingField.getName().equals("address"));
-        assertTrue(Arrays.stream(pc.expandablePersistents.get(Address.class).fields).anyMatch(field -> field.getName().equals("streetLineOne")));
-        assertTrue(Arrays.stream(pc.expandablePersistents.get(Address.class).fields).anyMatch(field -> field.getName().equals("postcode")));
-
-        assertTrue(Arrays.stream(pc.allFields).anyMatch(field -> field.getName().equals("firstName")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("firstName")));
-        assertTrue(Arrays.stream(pc.allFields).anyMatch(field -> field.getName().equals("lastName")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
-        assertTrue(Arrays.stream(pc.allFields).anyMatch(field -> field.getName().equals("lastName")));
-        assertTrue(Arrays.stream(pc.columns).anyMatch(s -> s.equals("lastName")));
-        assertTrue(Arrays.stream(pc.allFields).anyMatch(field -> field.getName().equals("streetLineOne")));
-        assertTrue(Arrays.stream(pc.allColumns).anyMatch(s -> s.equals("streetLineOne")));
-        assertTrue(Arrays.stream(pc.allFields).anyMatch(field -> field.getName().equals("postcode")));
-        assertTrue(Arrays.stream(pc.allColumns).anyMatch(s -> s.equals("postcode")));
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("firstName")));
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("lastName")));
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("streetLineOne")));
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("postcode")));
     }
 }
