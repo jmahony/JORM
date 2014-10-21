@@ -22,26 +22,6 @@ public class ContextGenerator {
         return epc;
     }
 
-    public static List<PersistentUnit> getAllPersistentUnits(BasePersistentContext pc) {
-        List<PersistentUnit> units = new ArrayList<>();
-        Field[] fields = getAllFieldsWithAnnotation(pc.c, Persistent.class);
-        Arrays.stream(fields).forEach(f ->
-            units.add(new PersistentUnit() {{
-                field = f;
-                c = pc.c;
-                context = pc;
-                a = Persistent.class;
-                column = getColumnName(f);
-            }})
-        );
-
-        Map<Class, BasePersistentContext> expandables = getExpandablePersistent(pc.c);
-
-        expandables.values().stream().forEach(epc -> epc.persistentUnits.forEach(units::add));
-
-        return units;
-    }
-
     public static PersistentContext generate(final Class<?> cl) {
         PersistentContext pc = new PersistentContext() {{
             c = cl;
@@ -61,10 +41,29 @@ public class ContextGenerator {
         return annotationName.isEmpty() ? c.getSimpleName() : annotationName;
     }
 
-    private static Map<Class, BasePersistentContext> getExpandablePersistent(Class<?> c) {
-        Field[] fields = getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
-        return Arrays.stream(fields).filter(field -> true).collect(Collectors.toMap(Field::getType, f ->
-                generateBase(f.getType(), f)));
+    private static Field getId(Class<?> c) {
+        Field[] id = getAllFieldsWithAnnotation(c, Id.class);
+        if (id.length > 0) return id[0];
+        throw new JormException("At least one field must be annotated with @Id");
+    }
+
+    public static List<PersistentUnit> getAllPersistentUnits(BasePersistentContext pc) {
+        List<PersistentUnit> units = new ArrayList<>();
+        Field[] fields = getAllFieldsWithAnnotation(pc.c, Persistent.class);
+        Arrays.stream(fields).forEach(f ->
+            units.add(new PersistentUnit() {{
+                field = f;
+                c = pc.c;
+                context = pc;
+                a = Persistent.class;
+                column = getColumnName(f);
+            }})
+        );
+
+        getExpandablePersistent(pc.c).values().stream().forEach(epc ->
+                epc.persistentUnits.forEach(units::add));
+
+        return units;
     }
 
     private static Field[] getAllFieldsWithAnnotation(Class<?> c, Class annotation) {
@@ -83,15 +82,15 @@ public class ContextGenerator {
         return fields;
     }
 
+    private static Map<Class, BasePersistentContext> getExpandablePersistent(Class<?> c) {
+        Field[] fields = getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
+        return Arrays.stream(fields).filter(field -> true).collect(Collectors.toMap(Field::getType, f ->
+                generateBase(f.getType(), f)));
+    }
+
     private static String getColumnName(Field field) {
         String column = field.getAnnotation(Persistent.class).column();
         return column.isEmpty() ? field.getName() : column;
-    }
-
-    private static Field getId(Class<?> c) {
-        Field[] id = getAllFieldsWithAnnotation(c, Id.class);
-        if (id.length > 0) return id[0];
-        throw new JormException("At least one field must be annotated with @Id");
     }
 
     private static void makeAccessible(PersistentContext pc) {
