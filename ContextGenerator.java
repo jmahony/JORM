@@ -42,15 +42,15 @@ public class ContextGenerator {
     }
 
     private static Field getId(Class<?> c) {
-        Field[] id = getAllFieldsWithAnnotation(c, Id.class);
-        if (id.length > 0) return id[0];
+        List<Field> id = getAllFieldsWithAnnotation(c, Id.class);
+        if (id.size() > 0) return id.get(0);
         throw new JormException("At least one field must be annotated with @Id");
     }
 
     public static List<PersistentUnit> getAllPersistentUnits(BasePersistentContext pc) {
         List<PersistentUnit> units = new ArrayList<>();
-        Field[] fields = getAllFieldsWithAnnotation(pc.c, Persistent.class);
-        Arrays.stream(fields).forEach(f ->
+        List<Field> fields = getAllFieldsWithAnnotation(pc.c, Persistent.class);
+        fields.forEach(f ->
             units.add(new PersistentUnit() {{
                 field = f;
                 c = pc.c;
@@ -66,10 +66,9 @@ public class ContextGenerator {
         return units;
     }
 
-    private static Field[] getAllFieldsWithAnnotation(Class<?> c, Class annotation) {
+    private static List<Field> getAllFieldsWithAnnotation(Class<?> c, Class annotation) {
         HashMap<String, Field> fields = new HashMap<>();
-        return getAllFieldsWithAnnotation(c, annotation, fields).values().stream().sorted((f1, f2) ->
-                f1.getName().compareTo(f2.getName())).toArray(Field[]::new);
+        return getAllFieldsWithAnnotation(c, annotation, fields).values().stream().collect(Collectors.toList());
     }
 
     private static HashMap<String, Field> getAllFieldsWithAnnotation(Class<?> c, Class annotation, HashMap<String, Field> fields) {
@@ -83,8 +82,8 @@ public class ContextGenerator {
     }
 
     private static Map<Class, BasePersistentContext> getExpandablePersistent(Class<?> c) {
-        Field[] fields = getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
-        return Arrays.stream(fields).filter(field -> true).collect(Collectors.toMap(Field::getType, f ->
+        List<Field> fields = getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
+        return fields.stream().filter(field -> true).collect(Collectors.toMap(Field::getType, f ->
                 generateBase(f.getType(), f)));
     }
 
