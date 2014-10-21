@@ -60,7 +60,7 @@ public class ContextGenerator {
             }})
         );
 
-        getExpandablePersistent(pc.c).values().stream().forEach(epc ->
+        getExpandablePersistent(pc.c).stream().forEach(epc ->
                 epc.persistentUnits.forEach(units::add));
 
         return units;
@@ -81,10 +81,9 @@ public class ContextGenerator {
         return fields;
     }
 
-    private static Map<Class, BasePersistentContext> getExpandablePersistent(Class<?> c) {
-        List<Field> fields = getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
-        return fields.stream().filter(field -> true).collect(Collectors.toMap(Field::getType, f ->
-                generateBase(f.getType(), f)));
+    private static List<BasePersistentContext> getExpandablePersistent(Class<?> c) {
+        return getAllFieldsWithAnnotation(c, ExpandablePersistent.class).stream().map(f ->
+                generateBase(f.getType(), f)).collect(Collectors.toList());
     }
 
     private static String getColumnName(Field field) {
@@ -93,7 +92,7 @@ public class ContextGenerator {
     }
 
     private static void makeAccessible(PersistentContext pc) {
-        pc.persistentUnits.forEach(pu -> pu.field.setAccessible(true));
+        makeAccessible((BasePersistentContext) pc);
         pc.id.setAccessible(true);
     }
 
