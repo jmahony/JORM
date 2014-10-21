@@ -15,8 +15,6 @@ public class ContextGenerator {
     public static BasePersistentContext generateBase(final Class<?> cl, Field field) {
         BasePersistentContext epc = new BasePersistentContext() {{
             c = cl;
-            fields = getPersistentFields(c);
-            columns = getColumns(fields);
             expandablePersistents = getExpandablePersistent(c);
             containingField = field;
             persistentUnits = getAllPersistentUnits(this);
@@ -49,8 +47,6 @@ public class ContextGenerator {
         PersistentContext pc = new PersistentContext() {{
             c = cl;
             tableName = getTableName(c);
-            fields = getPersistentFields(c);
-            columns = getColumns(fields);
             expandablePersistents = getExpandablePersistent(c);
             id = getId(c);
             persistentUnits = getAllPersistentUnits(this);
