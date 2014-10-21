@@ -40,18 +40,7 @@ public class ContextGenerator {
 
         Map<Class, BasePersistentContext> expandables = getExpandablePersistent(pc.c);
 
-        expandables.values().stream().forEach(epc ->
-            Arrays.stream(epc.fields).forEach(f ->
-                units.add(new PersistentUnit() {{
-                    field = f;
-                    c = pc.c;
-                    context = pc;
-                    a = ExpandablePersistent.class;
-                    containingField = epc.containingField;
-                    column = getColumnName(f);
-                }})
-            )
-        );
+        expandables.values().stream().forEach(epc -> epc.persistentUnits.forEach(units::add));
 
         return units;
     }
