@@ -13,12 +13,12 @@ public class PersistableBinder {
         Map<String, Object> results = new HashMap<>();
         resultSet.next();
         for (int i = 0; i < pc.persistentUnits.size(); i++) {
-            if (pc.fields[i].getType() == LocalDate.class) {
-                pc.fields[i].set(o, resultSet.getDate(pc.columns[i]).toLocalDate());
-            } else if (pc.fields[i].getType() == LocalDateTime.class) {
-                pc.fields[i].set(o, resultSet.getTimestamp(pc.columns[i]).toLocalDateTime());
+            if (pc.persistentUnits.get(i).field.getType() == LocalDate.class) {
+                pc.persistentUnits.get(i).field.set(o, resultSet.getDate(pc.persistentUnits.get(i).column).toLocalDate());
+            } else if (pc.persistentUnits.get(i).field.getType() == LocalDateTime.class) {
+                pc.persistentUnits.get(i).field.set(o, resultSet.getTimestamp(pc.persistentUnits.get(i).column).toLocalDateTime());
             } else {
-                pc.fields[i].set(o, resultSet.getObject(pc.columns[i]));
+                pc.persistentUnits.get(i).field.set(o, resultSet.getObject(pc.persistentUnits.get(i).column));
             }
         }
         pc.id.set(o, resultSet.getLong("id"));
