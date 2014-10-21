@@ -2,22 +2,27 @@ package com.wagerwilly.jorm;
 
 import com.wagerwilly.App;
 
-import java.lang.reflect.Field;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class StatementBinder {
     public static void bind(PreparedStatement statement, PersistentContext pc, Object o) throws IllegalAccessException, SQLException {
-        bind(statement, pc.fields, o);
+        bind(statement, pc.persistentUnits, o);
     }
 
-    private static void bind(PreparedStatement statement, Field[] fields, Object o) throws IllegalAccessException, SQLException {
-        for (int i = 0, p = 1; i < fields.length; i++, p++) {
-            bind(statement, fields[i].getType(), fields[i].get(o), p);
+    private static void bind(PreparedStatement statement, List<PersistentUnit> units, Object o) throws IllegalAccessException, SQLException {
+        for (int i = 0, position = 1; i < units.size(); i++, position++) {
+            bind(statement, units.get(i), o, position);
         }
+    }
+
+    private static void bind(PreparedStatement statement, PersistentUnit pu, Object o, int position) throws IllegalAccessException, SQLException {
+        Object r = pu.containingField == null ? o : pu.containingField.get(o);
+        bind(statement, pu.field.getType(), pu.field.get(r), position);
     }
 
     private static void bind(PreparedStatement statement, Class type, Object value, int position) throws SQLException {

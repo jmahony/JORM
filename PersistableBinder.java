@@ -12,7 +12,7 @@ public class PersistableBinder {
         T o = c.newInstance();
         Map<String, Object> results = new HashMap<>();
         resultSet.next();
-        for (int i = 0; i < pc.fields.length; i++) {
+        for (int i = 0; i < pc.persistentUnits.size(); i++) {
             if (pc.fields[i].getType() == LocalDate.class) {
                 pc.fields[i].set(o, resultSet.getDate(pc.columns[i]).toLocalDate());
             } else if (pc.fields[i].getType() == LocalDateTime.class) {

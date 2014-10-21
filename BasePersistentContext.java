@@ -1,6 +1,7 @@
 package com.wagerwilly.jorm;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 
 public class BasePersistentContext {
@@ -8,7 +9,6 @@ public class BasePersistentContext {
     public String[] columns;
     public Field[] fields;
     public Map<Class, BasePersistentContext> expandablePersistents;
-    public String[] allColumns;
-    public Field[] allFields;
     public Field containingField;
+    public List<PersistentUnit> persistentUnits;
 }

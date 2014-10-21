@@ -18,12 +18,42 @@ public class ContextGenerator {
             fields = getPersistentFields(c);
             columns = getColumns(fields);
             expandablePersistents = getExpandablePersistent(c);
-            allFields = getAllFields(this);
-            allColumns = getAllColumns(this);
             containingField = field;
+            persistentUnits = getAllPersistentUnits(this);
         }};
         makeAccessible(epc);
         return epc;
+    }
+
+    public static List<PersistentUnit> getAllPersistentUnits(BasePersistentContext pc) {
+        List<PersistentUnit> units = new ArrayList<>();
+        Field[] fields = getAllFieldsWithAnnotation(pc.c, Persistent.class);
+        Arrays.stream(fields).forEach(f ->
+            units.add(new PersistentUnit() {{
+                field = f;
+                c = pc.c;
+                context = pc;
+                a = Persistent.class;
+                column = getColumnName(f);
+            }})
+        );
+
+        Map<Class, BasePersistentContext> expandables = getExpandablePersistent(pc.c);
+
+        expandables.values().stream().forEach(epc ->
+            Arrays.stream(epc.fields).forEach(f ->
+                units.add(new PersistentUnit() {{
+                    field = f;
+                    c = pc.c;
+                    context = pc;
+                    a = ExpandablePersistent.class;
+                    containingField = epc.containingField;
+                    column = getColumnName(f);
+                }})
+            )
+        );
+
+        return units;
     }
 
     public static PersistentContext generate(final Class<?> cl) {
@@ -34,8 +64,7 @@ public class ContextGenerator {
             columns = getColumns(fields);
             expandablePersistents = getExpandablePersistent(c);
             id = getId(c);
-            allFields = getAllFields(this);
-            allColumns = getAllColumns(this);
+            persistentUnits = getAllPersistentUnits(this);
             selectQuery = QueryGenerator.generateSelectQueryString(this);
             insertQuery = QueryGenerator.generateInsertQueryString(this);
             updateQuery = QueryGenerator.generateUpdateQueryString(this);
@@ -76,10 +105,12 @@ public class ContextGenerator {
     }
 
     private static String[] getColumns(Field[] fields) {
-        return Arrays.stream(fields).map(field -> {
-            String column = field.getAnnotation(Persistent.class).column();
-            return column.isEmpty() ? field.getName() : column;
-        }).toArray(String[]::new);
+        return Arrays.stream(fields).map(ContextGenerator::getColumnName).toArray(String[]::new);
+    }
+
+    private static String getColumnName(Field field) {
+        String column = field.getAnnotation(Persistent.class).column();
+        return column.isEmpty() ? field.getName() : column;
     }
 
     private static Field getId(Class<?> c) {
@@ -89,31 +120,11 @@ public class ContextGenerator {
     }
 
     private static void makeAccessible(PersistentContext pc) {
-        Arrays.stream(pc.allFields).forEach(field -> field.setAccessible(true));
+        pc.persistentUnits.forEach(pu -> pu.field.setAccessible(true));
         pc.id.setAccessible(true);
     }
 
     private static void makeAccessible(BasePersistentContext pc) {
         Arrays.stream(pc.fields).forEach(field -> field.setAccessible(true));
-    }
-
-    private static Field[] getAllFields(BasePersistentContext pc) {
-        return getAllFields(pc, new ArrayList<>()).stream().toArray(Field[]::new);
-    }
-
-    private static List<Field> getAllFields(BasePersistentContext pc, List<Field> fields) {
-        fields.addAll(Arrays.asList(pc.fields));
-        pc.expandablePersistents.values().forEach(v -> getAllFields(v, fields));
-        return fields;
-    }
-
-    private static String[] getAllColumns(BasePersistentContext pc) {
-        return getAllColumns(pc, new ArrayList<>()).stream().toArray(String[]::new);
-    }
-
-    private static List<String> getAllColumns(BasePersistentContext pc, List<String> columns) {
-        columns.addAll(Arrays.asList(pc.columns));
-        pc.expandablePersistents.values().forEach(v -> getAllColumns(v, columns));
-        return columns;
     }
 }
