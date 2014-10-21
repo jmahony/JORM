@@ -114,6 +114,6 @@ public class ContextGenerator {
     }
 
     private static void makeAccessible(BasePersistentContext pc) {
-        Arrays.stream(pc.fields).forEach(field -> field.setAccessible(true));
+        pc.persistentUnits.forEach(pu -> pu.field.setAccessible(true));
     }
 }
