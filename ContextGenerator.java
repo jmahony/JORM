@@ -63,10 +63,6 @@ public class ContextGenerator {
         return annotationName.isEmpty() ? c.getSimpleName() : annotationName;
     }
 
-    private static Field[] getPersistentFields(Class<?> c) {
-        return getAllFieldsWithAnnotation(c, Persistent.class);
-    }
-
     private static Map<Class, BasePersistentContext> getExpandablePersistent(Class<?> c) {
         Field[] fields = getAllFieldsWithAnnotation(c, ExpandablePersistent.class);
         return Arrays.stream(fields).filter(field -> true).collect(Collectors.toMap(Field::getType, f ->
@@ -87,10 +83,6 @@ public class ContextGenerator {
             getAllFieldsWithAnnotation(c.getSuperclass(), annotation, fields);
         }
         return fields;
-    }
-
-    private static String[] getColumns(Field[] fields) {
-        return Arrays.stream(fields).map(ContextGenerator::getColumnName).toArray(String[]::new);
     }
 
     private static String getColumnName(Field field) {
