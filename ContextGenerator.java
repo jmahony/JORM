@@ -15,7 +15,6 @@ public class ContextGenerator {
     public static BasePersistentContext generateBase(final Class<?> cl, Field field) {
         BasePersistentContext epc = new BasePersistentContext() {{
             c = cl;
-            expandablePersistents = getExpandablePersistent(c);
             containingField = field;
             persistentUnits = getAllPersistentUnits(this);
         }};
@@ -47,7 +46,6 @@ public class ContextGenerator {
         PersistentContext pc = new PersistentContext() {{
             c = cl;
             tableName = getTableName(c);
-            expandablePersistents = getExpandablePersistent(c);
             id = getId(c);
             persistentUnits = getAllPersistentUnits(this);
             selectQuery = QueryGenerator.generateSelectQueryString(this);
