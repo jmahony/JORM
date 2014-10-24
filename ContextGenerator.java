@@ -50,20 +50,22 @@ public class ContextGenerator {
     public static List<PersistentUnit> getAllPersistentUnits(BasePersistentContext pc) {
         List<PersistentUnit> units = new ArrayList<>();
         List<Field> fields = getAllFieldsWithAnnotation(pc.c, Persistent.class);
-        fields.forEach(f ->
-            units.add(new PersistentUnit() {{
-                field = f;
-                c = pc.c;
-                context = pc;
-                a = Persistent.class;
-                column = getColumnName(f);
-            }})
-        );
+        fields.forEach(f -> units.add(generatePersistentUnit(pc, f)));
 
         getExpandablePersistent(pc.c).stream().forEach(epc ->
                 epc.persistentUnits.forEach(units::add));
 
         return units;
+    }
+
+    public static PersistentUnit generatePersistentUnit(BasePersistentContext pc, Field f) {
+        return new PersistentUnit() {{
+            field = f;
+            c = pc.c;
+            context = pc;
+            a = Persistent.class;
+            column = getColumnName(f);
+        }};
     }
 
     private static List<Field> getAllFieldsWithAnnotation(Class<?> c, Class annotation) {
