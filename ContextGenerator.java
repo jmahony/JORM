@@ -49,7 +49,7 @@ public class ContextGenerator {
 
     public static List<PersistentUnit> getAllPersistentUnits(BasePersistentContext pc) {
         List<PersistentUnit> units = new ArrayList<>();
-        List<Field> fields = getAllFieldsWithAnnotation(pc.c, Persistent.class);
+        List<Field> fields = getAllPersistent(pc.c);
         fields.forEach(f -> units.add(generatePersistentUnit(pc, f)));
 
         getAllExpandablePersistent(pc.c).stream().forEach(epc ->
@@ -81,6 +81,10 @@ public class ContextGenerator {
             getAllFieldsWithAnnotation(c.getSuperclass(), annotation, fields);
         }
         return fields;
+    }
+
+    private static List<Field> getAllPersistent(Class<?> c) {
+        return getAllFieldsWithAnnotation(c, Persistent.class).stream().collect(Collectors.toList());
     }
 
     private static List<BasePersistentContext> getAllExpandablePersistent(Class<?> c) {
