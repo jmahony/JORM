@@ -7,6 +7,8 @@ import com.wagerwilly.jorm.annotations.Table;
 import com.wagerwilly.jorm.exceptions.JormException;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -102,13 +104,21 @@ public class ContextGeneratorTest {
     }
 
     @Test
-    public void testGenerateContextWithExpandablePersistentFields() {
+    public void testGenerateContextWithExpandablePersistentFields() throws NoSuchFieldException {
         PersistentContext pc = ContextGenerator.generate(User6.class);
+        Field addressField = User6.class.getDeclaredField("address");
+
         assertEquals("id", pc.id.getName());
         assertEquals("user", pc.tableName);
         assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("firstName")));
         assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("lastName")));
         assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("streetLineOne")));
         assertTrue(pc.persistentUnits.stream().anyMatch(pu -> pu.field.getName().equals("postcode")));
+
+        pc.persistentUnits.forEach(pu -> {
+            if (pu.field.getName().equals("streetLineOne") || pu.field.getName().equals("postcode")) {
+                assertEquals(addressField, pu.context.containingField);
+            }
+        });
     }
 }

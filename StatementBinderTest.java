@@ -143,15 +143,18 @@ public class StatementBinderTest {
         fields = Arrays.stream(Address.class.getDeclaredFields()).filter(field ->
             field.getName().equals("addressLineOne")
         ).toArray(Field[]::new);
-        Field field2 = TestClass.class.getDeclaredField("address");
+
+        PersistentContext epc = new PersistentContext() {{
+            containingField = TestClass.class.getDeclaredField("address");
+        }};
+
         Arrays.stream(fields).forEach(f ->
             pc.persistentUnits.add(new PersistentUnit() {{
                 field = f;
                 c = pc.c;
-                context = pc;
+                context = epc;
                 a = Persistent.class;
                 column = f.getName();
-                containingField = field2;
             }})
         );
 
