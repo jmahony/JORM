@@ -21,7 +21,7 @@ public class StatementBinder {
     }
 
     private static void bind(PreparedStatement statement, PersistentUnit pu, Object o, int position) throws IllegalAccessException, SQLException {
-        Object r = pu.containingField == null ? o : pu.containingField.get(o);
+        Object r = pu.context.containingField == null ? o : pu.context.containingField.get(o);
         bind(statement, pu.field.getType(), pu.field.get(r), position);
     }
 
