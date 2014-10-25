@@ -22,8 +22,13 @@ public class QueryGenerator {
     }
 
     private static String addParameterToQueryString(String sql, BasePersistentContext pc, int position) {
+        String queryBlock = getQueryBlock(pc.persistentUnits.get(position));
         String separator = position == pc.persistentUnits.size() - 1 ? "" : ", %s";
-        return String.format(sql, pc.persistentUnits.get(position).column + separator, "?" + separator);
+        return String.format(sql, pc.persistentUnits.get(position).column + separator, queryBlock + separator);
+    }
+
+    private static String getQueryBlock(PersistentUnit pu) {
+        return pu.castTo != null ? "CAST(? AS " + pu.castTo + ")" : "?";
     }
 
     static String generateUpdateQueryString(PersistentContext pc) {
