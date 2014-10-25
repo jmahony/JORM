@@ -51,7 +51,7 @@ public class ContextGenerator {
         List<PersistentUnit> units = new ArrayList<>();
 
         getAllPersistent(pc.c).forEach(f -> units.add(generatePersistentUnit(pc, f)));
-        getAllExpandablePersistent(pc.c).stream().forEach(epc -> epc.persistentUnits.forEach(units::add));
+        getAllExpandablePersistent(pc.c).forEach(epc -> epc.persistentUnits.forEach(units::add));
 
         return units;
     }
