@@ -51,4 +51,20 @@ public class QueryGeneratorTest {
         }};
         assertEquals("DELETE FROM users WHERE id = {id}", QueryGenerator.generateDeleteQueryString(pc));
     }
+
+    @Test
+    public void testGeneratorInsertQueryWithTypeCast() throws IllegalAccessException {
+        List<PersistentUnit> units = new ArrayList<>();
+        PersistentUnit firstNameUnit = new PersistentUnit() {{ column = "firstName"; }};
+        PersistentUnit lastNameUnit = new PersistentUnit() {{ column = "lastName"; }};
+        PersistentUnit userLevel = new PersistentUnit() {{ column = "level"; castTo = "user_level"; }};
+        units.add(firstNameUnit);
+        units.add(lastNameUnit);
+        units.add(userLevel);
+        PersistentContext pc = new PersistentContext() {{
+            tableName = "users";
+            persistentUnits = units;
+        }};
+        assertEquals("INSERT INTO users (firstName, lastName, level) VALUES (?, ?, CAST(? AS user_level)) RETURNING *", QueryGenerator.generateInsertQueryString(pc));
+    }
 }
