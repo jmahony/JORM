@@ -28,7 +28,7 @@ public class QueryGenerator {
     }
 
     private static String getQueryBlock(PersistentUnit pu) {
-        return pu.castTo != null ? "CAST(? AS " + pu.castTo + ")" : "?";
+        return pu.castTo != null && !pu.castTo.equals("") ?  "CAST(? AS " + pu.castTo + ")" : "?";
     }
 
     static String generateUpdateQueryString(PersistentContext pc) {
