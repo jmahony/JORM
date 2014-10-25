@@ -121,4 +121,10 @@ public class ContextGeneratorTest {
             }
         });
     }
+
+    @Test
+    public void testAllFieldsAreAccessible() {
+        PersistentContext pc = ContextGenerator.generate(User6.class);
+        pc.persistentUnits.forEach(pu -> assertTrue(pu.field.isAccessible()));
+    }
 }
