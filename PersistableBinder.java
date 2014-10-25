@@ -19,17 +19,7 @@ public class PersistableBinder {
         Object p;
         for (int i = 0; i < pc.persistentUnits.size(); i++) {
             currentUnit = pc.persistentUnits.get(i);
-            if (currentUnit.context.containingField != null) {
-                Field containing = currentUnit.context.containingField;
-                if (containing.get(o) == null) {
-                    p = currentUnit.context.c.newInstance();
-                    containing.set(o, p);
-                } else {
-                    p = containing.get(o);
-                }
-            } else {
-                p = o;
-            }
+            p = getOperable(currentUnit, o);
             currentField = currentUnit.field;
             currentColumn = currentUnit.column;
             if (currentField.getType() == LocalDate.class) {
@@ -43,4 +33,21 @@ public class PersistableBinder {
         pc.id.set(o, resultSet.getLong("id"));
         return o;
     }
+
+
+    private static Object getOperable(PersistentUnit persistentUnit, Object o) throws IllegalAccessException, InstantiationException {
+        Object q;
+        if (persistentUnit.context.containingField != null) {
+            Field containing = persistentUnit.context.containingField;
+            if (containing.get(o) == null) {
+                q = persistentUnit.context.c.newInstance();
+                containing.set(o, q);
+            } else {
+                q = containing.get(o);
+            }
+        } else {
+            q = o;
+        }
+        return q;
     }
+}
