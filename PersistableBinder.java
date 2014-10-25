@@ -5,49 +5,49 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PersistableBinder {
     public static <T> T bind(PersistentContext pc, ResultSet resultSet, Class<T> c) throws SQLException, IllegalAccessException, InstantiationException {
         T o = c.newInstance();
-        Map<String, Object> results = new HashMap<>();
         resultSet.next();
-        PersistentUnit currentUnit;
-        Field currentField;
-        String currentColumn;
-        Object p;
+
         for (int i = 0; i < pc.persistentUnits.size(); i++) {
-            currentUnit = pc.persistentUnits.get(i);
-            p = getOperable(currentUnit, o);
-            currentField = currentUnit.field;
-            currentColumn = currentUnit.column;
-            if (currentField.getType() == LocalDate.class) {
-                currentField.set(p, resultSet.getDate(currentColumn).toLocalDate());
-            } else if (pc.persistentUnits.get(i).field.getType() == LocalDateTime.class) {
-                currentField.set(p, resultSet.getTimestamp(currentColumn).toLocalDateTime());
-            } else {
-                currentField.set(p, resultSet.getObject(currentColumn));
-            }
+            bind(pc.persistentUnits.get(i), resultSet, o);
         }
+
         pc.id.set(o, resultSet.getLong("id"));
         return o;
     }
 
-
-    private static Object getOperable(PersistentUnit persistentUnit, Object o) throws IllegalAccessException, InstantiationException {
-        Object q;
-        if (persistentUnit.context.containingField != null) {
-            Field containing = persistentUnit.context.containingField;
-            if (containing.get(o) == null) {
-                q = persistentUnit.context.c.newInstance();
-                containing.set(o, q);
-            } else {
-                q = containing.get(o);
-            }
+    private static void bind(PersistentUnit pu, ResultSet resultSet, Object o) throws InstantiationException, IllegalAccessException, SQLException {
+        Object p = getOperable(pu, o);
+        if (pu.field.getType() == LocalDate.class) {
+            pu.field.set(p, resultSet.getDate(pu.column).toLocalDate());
+        } else if (pu.field.getType() == LocalDateTime.class) {
+            pu.field.set(p, resultSet.getTimestamp(pu.column).toLocalDateTime());
         } else {
-            q = o;
+            pu.field.set(p, resultSet.getObject(pu.column));
         }
+    }
+
+    private static Object getOperable(PersistentUnit pu, Object o) throws IllegalAccessException, InstantiationException {
+        if (pu.context.containingField == null) return o;
+
+        Field containing = pu.context.containingField;
+
+        if (objectsFieldHasValue(o, containing)) return containing.get(o);
+
+        Object q = getContextClassInstance(pu.context);
+        containing.set(o, q);
+
         return q;
+    }
+
+    private static boolean objectsFieldHasValue(Object o, Field field) throws IllegalAccessException {
+        return field.get(o) != null;
+    }
+
+    private static Object getContextClassInstance(BasePersistentContext context) throws IllegalAccessException, InstantiationException {
+        return context.c.newInstance();
     }
 }
