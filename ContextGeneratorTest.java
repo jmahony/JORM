@@ -12,6 +12,13 @@ import java.lang.reflect.Field;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@Table(name = "user")
+class User7 {
+    public enum Level { ADMIN, USER };
+    @Id long id;
+    @Persistent(castTo = "user_level") Level level;
+}
+
 public class ContextGeneratorTest {
     @Table(name = "user")
     class User1 {}
@@ -126,5 +133,14 @@ public class ContextGeneratorTest {
     public void testAllFieldsAreAccessible() {
         PersistentContext pc = ContextGenerator.generate(User6.class);
         pc.persistentUnits.forEach(pu -> assertTrue(pu.field.isAccessible()));
+    }
+
+    @Test
+    public void testGenerateContextWithEnumTypes() {
+        PersistentContext pc = ContextGenerator.generate(User7.class);
+        assertEquals("id", pc.id.getName());
+        assertEquals("user", pc.tableName);
+        assertTrue(pc.persistentUnits.stream().anyMatch(pu ->
+                pu.castTo.equals("user_level") && pu.field.getName().equals("level")));
     }
 }
