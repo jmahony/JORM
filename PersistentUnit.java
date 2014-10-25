@@ -8,4 +8,5 @@ public class PersistentUnit {
     public String column;
     public BasePersistentContext context;
     public Class a;
+    public String castTo;
 }
