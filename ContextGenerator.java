@@ -102,5 +102,8 @@ public class ContextGenerator {
 
     private static void makeAccessible(BasePersistentContext pc) {
         pc.persistentUnits.forEach(pu -> pu.field.setAccessible(true));
+        if (pc.containingField != null) {
+            pc.containingField.setAccessible(true);
+        }
     }
 }
