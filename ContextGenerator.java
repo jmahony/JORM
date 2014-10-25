@@ -47,7 +47,7 @@ public class ContextGenerator {
         throw new JormException("At least one field must be annotated with @Id");
     }
 
-    public static List<PersistentUnit> getAllPersistentUnits(BasePersistentContext pc) {
+    private static List<PersistentUnit> getAllPersistentUnits(BasePersistentContext pc) {
         List<PersistentUnit> units = new ArrayList<>();
 
         getAllPersistent(pc.c).forEach(f -> units.add(generatePersistentUnit(pc, f)));
@@ -56,7 +56,7 @@ public class ContextGenerator {
         return units;
     }
 
-    public static PersistentUnit generatePersistentUnit(BasePersistentContext pc, Field f) {
+    private static PersistentUnit generatePersistentUnit(BasePersistentContext pc, Field f) {
         return new PersistentUnit() {{
             field = f;
             c = pc.c;
