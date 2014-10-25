@@ -63,6 +63,7 @@ public class ContextGenerator {
             context = pc;
             a = Persistent.class;
             column = getColumnName(f);
+            castTo = field.getAnnotation(Persistent.class).castTo();
         }};
     }
 
