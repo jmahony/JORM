@@ -5,13 +5,17 @@ import com.wagerwilly.jorm.exceptions.DiscriminatorException;
 
 import java.sql.ResultSet;
 
-public class DiscriminatorEvaluator {
-    public static Class discriminate(ResultSet rs, Class<?> c) throws Exception {
-        Class<? extends DiscriminatorInterface> discriminatorClass = getDiscriminatorClass(c);
-        DiscriminatorInterface discriminator = discriminatorClass.newInstance();
-        return discriminator.execute(rs);
+public class DiscriminatorEvaluator<T> {
+    public Class<? extends T> discriminate(ResultSet rs, Class<T> c) throws DiscriminatorException {
+        try {
+            Class<? extends DiscriminatorInterface> discriminatorClass = getDiscriminatorClass(c);
+            DiscriminatorInterface discriminator = discriminatorClass.newInstance();
+            return discriminator.execute(rs);
+        } catch (Exception e) {
+            throw new DiscriminatorException(e.getMessage());
+        }
     }
-    private static Class<? extends DiscriminatorInterface> getDiscriminatorClass(Class<?> c) {
+    private Class<? extends DiscriminatorInterface> getDiscriminatorClass(Class<?> c) {
         try {
             return c.getAnnotation(Discriminator.class).discriminatorClass();
         } catch (NullPointerException e) {
