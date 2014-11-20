@@ -16,7 +16,7 @@ public class DiscriminatorTest {
         ResultSet rs = mock(ResultSet.class);
         when(rs.getString("role")).thenReturn("administrator");
 
-        Class o = DiscriminatorEvaluator.discriminate(rs, User.class);
+        Class o = new DiscriminatorEvaluator<User>().discriminate(rs, User.class);
 
         assertEquals(Administrator.class, o);
     }
@@ -26,7 +26,7 @@ public class DiscriminatorTest {
         ResultSet rs = mock(ResultSet.class);
         when(rs.getString("role")).thenReturn("administrator");
 
-        DiscriminatorEvaluator.discriminate(rs, UserWithNoDiscriminator.class);
+        Class o = new DiscriminatorEvaluator<UserWithNoDiscriminator>().discriminate(rs, UserWithNoDiscriminator.class);
     }
 }
 
